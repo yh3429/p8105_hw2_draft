@@ -1,0 +1,7 @@
+---
+title: "p8105_hw2_draft"
+Author: "Yujie Huang"
+output: html_document
+date: "2022-10-03"
+---
+
