@@ -279,7 +279,24 @@ pols_month_tidy = subset(pols_month, select = -c(prez_dem,
                                                 prez_gop,
                                                 day) ) %>% 
   mutate(year = as.numeric(year))
+
+pols_month_tidy
 ```
+
+    ## # A tibble: 822 × 9
+    ##     year month gov_gop sen_gop rep_gop gov_dem sen_dem rep_dem president
+    ##    <dbl> <chr>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr>    
+    ##  1  1947 Jan        23      51     253      23      45     198 dem      
+    ##  2  1947 Feb        23      51     253      23      45     198 dem      
+    ##  3  1947 Mar        23      51     253      23      45     198 dem      
+    ##  4  1947 Apr        23      51     253      23      45     198 dem      
+    ##  5  1947 May        23      51     253      23      45     198 dem      
+    ##  6  1947 Jun        23      51     253      23      45     198 dem      
+    ##  7  1947 Jul        23      51     253      23      45     198 dem      
+    ##  8  1947 Aug        23      51     253      23      45     198 dem      
+    ##  9  1947 Sep        23      51     253      23      45     198 dem      
+    ## 10  1947 Oct        23      51     253      23      45     198 dem      
+    ## # … with 812 more rows
 
 ### Second, clean the data in snp.csv using a similar process to the above.
 
@@ -304,7 +321,24 @@ snp=
 snp_tidy = subset(snp, select = -c(day)) %>% 
   select(year, month, close) %>% 
   mutate(year = as.numeric(year))
+
+  snp_tidy
 ```
+
+    ## # A tibble: 787 × 3
+    ##     year month close
+    ##    <dbl> <chr> <dbl>
+    ##  1    15 Jul   2080.
+    ##  2    15 Jun   2063.
+    ##  3    15 May   2107.
+    ##  4    15 Apr   2086.
+    ##  5    15 Mar   2068.
+    ##  6    15 Feb   2104.
+    ##  7    15 Jan   1995.
+    ##  8    14 Dec   2059.
+    ##  9    14 Nov   2068.
+    ## 10    14 Oct   2018.
+    ## # … with 777 more rows
 
 ### Third, tidy the unemployment data.
 
@@ -331,7 +365,24 @@ unem_tidy =
     values_to = " percentage"
   ) %>% 
     mutate( year = as.numeric(year))
+
+unem_tidy 
 ```
+
+    ## # A tibble: 816 × 3
+    ##     year month ` percentage`
+    ##    <dbl> <chr>         <dbl>
+    ##  1  1948 jan             3.4
+    ##  2  1948 feb             3.8
+    ##  3  1948 mar             4  
+    ##  4  1948 apr             3.9
+    ##  5  1948 may             3.5
+    ##  6  1948 jun             3.6
+    ##  7  1948 jul             3.6
+    ##  8  1948 aug             3.9
+    ##  9  1948 sep             3.8
+    ## 10  1948 oct             3.7
+    ## # … with 806 more rows
 
 ### Join the datasets by merging snp into pols, and merging unemployment into the result.
 

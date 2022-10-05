@@ -181,6 +181,8 @@ pols_month_tidy = subset(pols_month, select = -c(prez_dem,
                                                 prez_gop,
                                                 day) ) %>% 
   mutate(year = as.numeric(year))
+
+pols_month_tidy
   
 ```
 
@@ -197,7 +199,7 @@ snp_tidy = subset(snp, select = -c(day)) %>%
   select(year, month, close) %>% 
   mutate(year = as.numeric(year))
 
-  
+  snp_tidy
 ```
 
 ### Third, tidy the unemployment data.
@@ -217,7 +219,7 @@ unem_tidy =
   ) %>% 
     mutate( year = as.numeric(year))
 
-
+unem_tidy 
 ```
 ### Join the datasets by merging snp into pols, and merging unemployment into the result.
 
