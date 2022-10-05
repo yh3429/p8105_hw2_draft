@@ -1,5 +1,5 @@
 ---
-title: "p8105_hw2_draft"
+title: "p8105_hw2_yh3429"
 Author: "Yujie Huang"
 output: github_document
 date: "2022-10-03"
@@ -101,8 +101,8 @@ Mr_Trash_wheel = read_excel("./data/Trash Wheel Collection Data.xlsx",
                            col_types = NULL,
                            na = ""
                            ) %>% 
-   drop_na() %>% 
    janitor::clean_names() %>% 
+   drop_na(dumpster) %>% 
    mutate(sports_balls =  as.integer(round(sports_balls, digits = 0))) %>% 
    mutate(sheet_name="Mr")
 ```
@@ -118,8 +118,8 @@ Pro_Trash_wheel = read_excel ("./data/Trash Wheel Collection Data.xlsx",
                            col_types = NULL,
                            na = ""
                            ) %>% 
-   drop_na() %>% 
    janitor::clean_names() %>% 
+   drop_na(dumpster) %>% 
    mutate(sheet_name="Pro")
 ```
 
@@ -134,13 +134,13 @@ bind_rows(Mr_Trash_wheel, Pro_Trash_wheel, .id="dumpster")
 ```
 
 ### A paragraph description for these datasets
-1. In the combined trash wheel dataset, there are **568** observations of **15** variables.The key variables includes `dumpster`, `month`, `year`, `date`, `weight_tons`, `volume_cubic_yards`, `plastic_bottles`, `polystyrene`, `cigarette_butts`,`glass_bottles`,`grocery_bags`, `chip_bags`, `sports_balls`, `homes_powered`, and `sheet_name`. In addition, the variable `sheet_name` is added in order to distinguish the two datasets with the same columns.
+1. In the combined trash wheel dataset, there are **641** observations of **15** variables.The key variables includes `dumpster`, `month`, `year`, `date`, `weight_tons`, `volume_cubic_yards`, `plastic_bottles`, `polystyrene`, `cigarette_butts`,`glass_bottles`,`grocery_bags`, `chip_bags`, `sports_balls`, `homes_powered`, and `sheet_name`. In addition, the variable `sheet_name` is added in order to distinguish the two datasets with the same columns.
 
-2. In the Mr. trash wheel dataset, there are **486** observations of **15** variables.
+2. In the Mr. trash wheel dataset, there are **547** observations of **15** variables.
 The key variables includes `dumpster`, `month`, `year`, `date`, `weight_tons`, `volume_cubic_yards`, `plastic_bottles`, `polystyrene`, `cigarette_butts`,
 `glass_bottles`, `grocery_bags`,`chip_bags`, `sports_balls`, `homes_powered`,`sheet_name`.  
 
-3. In the Professor trash wheel dataset, there are **82** observations of **14** variables.The key variables includes `dumpster`, `month`, `year`, `date`, `weight_tons`, `volume_cubic_yards`, `plastic_bottles`, `polystyrene`, `cigarette_butts`,`glass_bottles`, `grocery_bags`,`chip_bags`, `homes_powered`,`sheet_name`.  
+3. In the Professor trash wheel dataset, there are **94** observations of **14** variables.The key variables includes `dumpster`, `month`, `year`, `date`, `weight_tons`, `volume_cubic_yards`, `plastic_bottles`, `polystyrene`, `cigarette_butts`,`glass_bottles`, `grocery_bags`,`chip_bags`, `homes_powered`,`sheet_name`.  
 
 #### For available data, what was the total weight of trash collected by Professor Trash Wheel?
 
@@ -148,7 +148,7 @@ The key variables includes `dumpster`, `month`, `year`, `date`, `weight_tons`, `
 Total_weight =  sum (Pro_Trash_wheel$weight_tons)
 ```
 According to the sum result, the total weight of trash collected by
-Professor Trash wheel is **162.54 tons**.
+Professor Trash wheel is **190.12 tons**.
 
 #### For available data, what was the total number of sports balls collected by Mr.Trash wheel in 2020?
 
@@ -157,7 +157,7 @@ Total_sports_balls= Mr_Trash_wheel %>%  filter(year=="2020") %>%
   summarise(sum(sports_balls))
 ```
 According to the sum result in 2020, the total number of sports balls collected by
-Mr.Trash wheel is **856**.
+Mr.Trash wheel is **856**. 
 
  
  
@@ -175,14 +175,11 @@ pols_month =
   separate(mon, into = c("year", "month", "day")) %>%
   mutate(month = month.abb[as.numeric(month)]) %>% 
   mutate(president = case_when (prez_gop == 1 ~ "gop",
-                                prez_dem == 1 ~ "dem")) 
-
-pols_month_tidy = subset(pols_month, select = -c(prez_dem, 
-                                                prez_gop,
-                                                day) ) %>% 
+                                prez_dem == 1 ~ "dem")) %>% 
+  subset( select = -c(prez_dem, prez_gop,day) ) %>% 
   mutate(year = as.numeric(year))
 
-pols_month_tidy
+pols_month
   
 ```
 
@@ -193,13 +190,12 @@ snp=
   read_csv("./data/snp.csv") %>% 
   janitor::clean_names() %>%
   separate(date, into = c("month", "day", "year")) %>% 
-   mutate(month = month.abb[as.numeric(month)]) 
-
-snp_tidy = subset(snp, select = -c(day)) %>% 
+   mutate(month = month.abb[as.numeric(month)]) %>% 
+  subset( select = -c(day)) %>% 
   select(year, month, close) %>% 
   mutate(year = as.numeric(year))
 
-  snp_tidy
+  snp
 ```
 
 ### Third, tidy the unemployment data.
@@ -207,43 +203,37 @@ snp_tidy = subset(snp, select = -c(day)) %>%
 ```{r}
 unem = 
   read_csv("./data/unemployment.csv") %>% 
-   janitor::clean_names()
-
-  
-unem_tidy =
+   janitor::clean_names() %>% 
   pivot_longer(
-    unem, 
     jan:dec,
     names_to = "month",
     values_to = " percentage"
   ) %>% 
     mutate( year = as.numeric(year))
 
-unem_tidy 
+unem
 ```
 ### Join the datasets by merging snp into pols, and merging unemployment into the result.
 
 ```{r}
-pols_snp = pols_month_tidy %>% left_join(snp_tidy)
+pols_snp = pols_month %>% left_join(snp)
 
-pols_snp_unem = mutate (merge(pols_snp, unem_tidy, by.x="year", by.y="year")) %>% mutate( year = as.numeric(year))
-
-  
+pols_snp_unem = pols_snp %>% left_join(unem) %>% mutate( year = as.numeric(year))
 
 ```
 ### range of years
 ```{r}
 # range of years - the data in pols-month.csv.
- print(max(pols_month_tidy$year, na.rm=TRUE)
-                    -min(pols_month_tidy$year, na.rm=TRUE))
+ print(max(pols_month$year, na.rm=TRUE)
+                    -min(pols_month$year, na.rm=TRUE))
 
 # range of years - the data in snp.csv.
-print(max(snp_tidy$year, na.rm=TRUE)
-                    -min(snp_tidy$year, na.rm=TRUE))
+print(max(snp$year, na.rm=TRUE)
+                    -min(snp$year, na.rm=TRUE))
 
 # range of years - the unemployment data
-print(max(unem_tidy$year, na.rm=TRUE)
-                    -min(unem_tidy$year, na.rm=TRUE))
+print(max(unem$year, na.rm=TRUE)
+                    -min(unem$year, na.rm=TRUE))
 
 # range of years - the merged resulting dataset
 print(max(pols_snp_unem$year, na.rm=TRUE)
@@ -262,7 +252,7 @@ There are **787** rows and **3** columns. The range of year is **99**. And the k
 There are **816** rows and **3** columns. The range of year is **67**. And the key variables include `year`, `month` and `percentage`.
 
 #### The merged resulting dataset by Joining the datasets by merging snp into pols, and merging unemployment.
-There are **9720** rows and **12** columns. The range of year is **67**. And the key variables include `year`, `month.x`, `gov_gop`, `sen_gop`, `rep_gop`, `gov_dem`, `sen_dem`, `rep_dem`, `president`,`close`,`month.y` and `percentage`.
+There are **822** rows and **11** columns. The range of year is **68**. And the key variables include `year`, `month`, `gov_gop`, `sen_gop`, `rep_gop`, `gov_dem`, `sen_dem`, `rep_dem`, `president`,`close` and `percentage`.
 
 
 
